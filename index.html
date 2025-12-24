@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIMID DNA Pro: Phiên Bản Đào Tạo Chuyên Sâu</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        oswald: ['Oswald', 'sans-serif'],
+                        sans: ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#B71C1C',   // Đỏ Đậm Vimid
+                        secondary: '#37474F', // Xám Kim Khí
+                        dark: '#1a237e',      // Xanh Đậm
+                        accent: '#FFD600',    // Vàng Cảnh Báo
+                    },
+                    animation: {
+                        'ken-burns': 'kenBurns 25s infinite alternate',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        kenBurns: {
+                            '0%': { transform: 'scale(1) translate(0, 0)' },
+                            '100%': { transform: 'scale(1.15) translate(-3%, -3%)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.98); /* Tăng độ đục để chữ rõ hơn */
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        .slide { display: none; opacity: 0; transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out; }
+        .slide.active { display: flex; opacity: 1; transform: scale(1); }
+        .build-item { opacity: 0; transform: translateY(15px); transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        .build-item.revealed { opacity: 1; transform: translateY(0); }
+        
+        /* Typography Enhancements for Readability */
+        p { line-height: 1.6; }
+        ul li { margin-bottom: 0.5rem; }
+        
+        .vimid-header {
+            border-left: 6px solid #B71C1C;
+            padding-left: 1rem;
+        }
+
+        #spotlight-overlay {
+            background: radial-gradient(circle 180px at var(--x) var(--y), transparent 0%, rgba(0, 0, 0, 0.92) 100%);
+            pointer-events: none;
+            z-index: 9999;
+        }
+        [contenteditable="true"]:hover { outline: 1px dashed #B71C1C; background: rgba(183, 28, 28, 0.03); cursor: text; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-800 overflow-hidden h-screen w-screen selection:bg-primary selection:text-white">
+
+    <!-- BACKGROUND: Logistics/Truck Theme -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div id="bg-image" class="w-full h-full bg-cover bg-center animate-ken-burns opacity-25" 
+             style="background-image: url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80');">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900/90 to-gray-800"></div>
+    </div>
+
+    <div id="spotlight-overlay" class="fixed inset-0 hidden"></div>
+
+    <main id="presentation-container" class="relative z-10 w-full h-full flex flex-col justify-center items-center p-2 md:p-6 lg:p-8">
+        
+        <div id="stage" class="relative w-full max-w-[1400px] h-[90vh] glass-panel rounded-xl overflow-hidden shadow-2xl flex flex-col transition-all duration-500 border-t-8 border-primary">
+            
+            <div id="slides-wrapper" class="flex-1 relative w-full h-full overflow-hidden p-8 md:p-12 lg:p-16">
+                
+                <!-- SLIDE 1: TITLE -->
+                <div class="slide active flex-col justify-center items-center h-full text-center" id="slide-1">
+                    <div class="mb-8 animate-fade-in-up">
+                        <!-- Logo Placeholder -->
+                        <div class="inline-flex items-center gap-3 bg-white px-6 py-3 rounded shadow-md mb-6">
+                            <i class="fas fa-truck-moving text-4xl text-primary"></i>
+                            <span class="font-oswald text-3xl font-bold tracking-tighter text-gray-800">VIMID</span>
+                        </div>
+                        <br>
+                        <span class="bg-primary text-white px-4 py-1 rounded text-sm font-bold tracking-[0.2em] uppercase shadow-lg">Chương trình Đào tạo Văn hóa Doanh nghiệp 2024</span>
+                    </div>
+                    <h1 contenteditable="true" class="font-oswald text-6xl md:text-8xl font-bold text-gray-900 mb-6 leading-none animate-fade-in-up" style="animation-delay: 0.1s">
+                        KIẾN TRÚC DNA <span class="text-primary">VIMID</span>
+                    </h1>
+                    <p contenteditable="true" class="text-2xl text-gray-600 max-w-4xl mx-auto mb-12 font-light animate-fade-in-up" style="animation-delay: 0.2s">
+                        Chuyển hóa Giá trị Cốt lõi thành <strong class="text-gray-900">Năng lực Cạnh tranh</strong> tại từng Trạm Dịch vụ, từng Đơn hàng & từng Nhân sự.
+                    </p>
+                    <div class="flex gap-6 justify-center animate-fade-in-up" style="animation-delay: 0.3s">
+                         <div class="text-left border-l-4 border-secondary pl-4">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Đối tượng</p>
+                            <p class="font-bold text-gray-800">Cán bộ Quản lý & Key Person</p>
+                         </div>
+                         <div class="text-left border-l-4 border-secondary pl-4">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Mục tiêu</p>
+                            <p class="font-bold text-gray-800">Thống nhất Tư duy & Hành động</p>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: OBJECTIVES & CONTEXT DETAIL -->
+                <div class="slide flex-col h-full" id="slide-2">
+                    <h2 contenteditable="true" class="font-oswald text-5xl text-gray-900 mb-8 vimid-header">Bối Cảnh & Thách Thức: "Bẫy Giá Cả"</h2>
+                    <div class="grid grid-cols-2 gap-16 items-start h-full pb-10">
+                        <div class="space-y-8">
+                            <div class="build-item">
+                                <h3 class="text-2xl font-bold text-primary mb-3"><i class="fas fa-chart-line mr-2"></i>Thị Trường Xe Tải 2024</h3>
+                                <p class="text-gray-700 text-lg">Cạnh tranh khốc liệt từ các dòng xe giá rẻ. Lợi nhuận biên trên mỗi đầu xe giảm từ <strong>15% xuống còn dưới 5%</strong>.</p>
+                            </div>
+                            <div class="build-item">
+                                <h3 class="text-2xl font-bold text-primary mb-3"><i class="fas fa-user-clock mr-2"></i>Áp Lực Khách Hàng</h3>
+                                <p class="text-gray-700 text-lg">Khách hàng vận tải Logistic yêu cầu xe chạy <strong>24/7</strong>. Mỗi giờ xe nằm đường (downtime) là khách hàng mất hàng triệu đồng doanh thu.</p>
+                            </div>
+                            <div class="build-item bg-red-50 p-4 rounded-lg border border-red-200">
+                                <span class="font-bold text-red-800 block mb-1">Hệ quả nếu không thay đổi:</span>
+                                <p class="text-sm text-red-700">Chúng ta sẽ bị cuốn vào cuộc đua giảm giá cắt máu và mất khách hàng vào tay đối thủ có dịch vụ tốt hơn.</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-8 rounded-xl border-t-8 border-primary shadow-xl build-item">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-6 uppercase tracking-wider text-center">Lời Giải DNA Vimid</h3>
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xl">1</div>
+                                    <div><h4 class="font-bold text-lg">Bán Giải Pháp</h4><p class="text-sm text-gray-600">Không bán sắt thép, bán hiệu quả vận tải (TCO - Total Cost of Ownership).</p></div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xl">2</div>
+                                    <div><h4 class="font-bold text-lg">Dịch vụ Tận tâm</h4><p class="text-sm text-gray-600">Biến trạm dịch vụ thành điểm tựa tin cậy trên mọi cung đường.</p></div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-700 font-bold text-xl">3</div>
+                                    <div><h4 class="font-bold text-lg">Đồng bộ Hóa</h4><p class="text-sm text-gray-600">Văn phòng và Xưởng cùng nhìn về một hướng.</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: GAP ANALYSIS DETAIL -->
+                <div class="slide flex-col h-full" id="slide-3">
+                    <h2 contenteditable="true" class="font-oswald text-5xl text-gray-900 mb-8 vimid-header">Khoảng Cách Văn Hóa: Giá Trị vs Thực Tế</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center h-full">
+                        <div class="space-y-6">
+                            <div class="build-item bg-white p-8 rounded-xl shadow-lg border-l-8 border-red-500">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center"><i class="fas fa-exclamation-circle text-red-500 mr-3"></i>Case Study Điển Hình</h3>
+                                <p class="text-gray-700 mb-4 text-lg"><strong>Bối cảnh:</strong> Sales cam kết với khách VIP giao 5 xe Howo ngay trong chiều thứ 6 để kịp giờ đẹp khởi hành.</p>
+                                <p class="text-gray-700 mb-4 text-lg"><strong>Thực tế:</strong> Xe chưa làm PDI (Kiểm tra trước giao hàng). Xưởng từ chối ký biên bản bàn giao vì xe thiếu dầu cầu và lốp chưa cân.</p>
+                                <hr class="border-gray-200 my-4">
+                                <div class="bg-red-50 p-3 rounded">
+                                    <p class="font-bold text-red-800 text-sm">THIỆT HẠI ĐO ĐẾM ĐƯỢC:</p>
+                                    <ul class="list-disc list-inside text-sm text-red-700 mt-1">
+                                        <li>Khách hủy cọc 2 xe vì lỡ giờ (Mất 200tr lợi nhuận).</li>
+                                        <li>Sales và Xưởng đổ lỗi nhau trong cuộc họp giao ban thứ 2.</li>
+                                        <li>Uy tín Vimid bị ảnh hưởng trong giới vận tải.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative h-80 w-full bg-gray-50 rounded-xl p-6 shadow-inner build-item border border-gray-200">
+                            <canvas id="gapChart"></canvas>
+                            <p class="text-center text-xs text-gray-500 mt-4 italic">*Dữ liệu khảo sát nội bộ tháng 3/2024</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: MENTAL MODELS DETAIL -->
+                <div class="slide flex-col h-full" id="slide-4">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-6 vimid-header">Tại Sao Lỗi Sai Vẫn Lặp Lại? (Tảng Băng Trôi)</h2>
+                    <div class="flex-1 flex items-center justify-center relative">
+                        <div class="relative w-full max-w-5xl h-full flex flex-col justify-center items-center">
+                            <!-- Event -->
+                             <div class="build-item bg-blue-50 w-full max-w-lg p-4 rounded shadow mb-1 flex items-center gap-4 z-30 transform translate-y-[-10px]">
+                                <div class="bg-blue-600 text-white font-bold px-3 py-1 rounded text-sm">SỰ KIỆN</div>
+                                <p class="text-sm font-semibold">"Kỹ thuật viên tư vấn khách thay dầu ngoài luồng để kiếm thêm"</p>
+                            </div>
+                            
+                            <!-- Waterline -->
+                            <div class="w-full h-1 bg-blue-400/50 my-4 relative z-20"><span class="absolute right-0 -top-6 text-blue-600 text-xs font-bold italic bg-white px-2 py-1 rounded">Bề mặt quan sát được</span></div>
+                            
+                            <!-- Patterns -->
+                            <div class="build-item bg-indigo-50 w-full max-w-xl p-4 rounded shadow mb-2 flex items-center gap-4 border-l-4 border-indigo-400">
+                                <div class="text-indigo-800 font-bold text-sm w-24">MÔ THỨC</div>
+                                <p class="text-sm">"Việc này xảy ra nhiều nhất vào cuối tháng ở các trạm xa trung tâm."</p>
+                            </div>
+                            
+                            <!-- Structure -->
+                            <div class="build-item bg-purple-50 w-full max-w-2xl p-4 rounded shadow mb-2 flex items-center gap-4 border-l-4 border-purple-400">
+                                <div class="text-purple-800 font-bold text-sm w-24">CẤU TRÚC</div>
+                                <p class="text-sm">"Lương cứng thợ thấp (5tr), cơ chế thưởng phụ tùng chính hãng chưa hấp dẫn bằng hoa hồng 'hàng ngoài'."</p>
+                            </div>
+                            
+                            <!-- Mental Model -->
+                            <div class="build-item bg-red-50 w-full max-w-3xl p-6 rounded shadow-xl flex items-center gap-4 border-l-8 border-primary">
+                                <div class="text-primary font-bold text-xl w-32 shrink-0">TƯ DUY<br><span class="text-xs font-normal text-gray-500">(Gốc rễ)</span></div>
+                                <div>
+                                    <p class="text-lg font-bold text-gray-800 mb-2">"Công ty giàu rồi, mình kiếm tí chút có sao đâu."</p>
+                                    <p class="text-sm text-gray-600">-> Thiếu ý thức về việc: Một chiếc lọc dầu kém chất lượng có thể phá hỏng động cơ Howo trị giá 200 triệu, và khi đó Vimid mới là người đền bù.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: 4 PILLARS -->
+                <div class="slide flex-col h-full" id="slide-5">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-center mb-10 text-gray-900">4 Trụ Cột Năng Lực: Hệ Điều Hành Vimid</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 h-full pb-8">
+                        <div class="build-item bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto"><i class="fas fa-shield-alt text-3xl text-blue-600"></i></div>
+                            <h3 class="font-oswald text-xl text-center mb-2 text-blue-800">1. Chính Trực</h3>
+                            <ul class="text-xs text-gray-600 space-y-1 list-disc pl-4">
+                                <li>Minh bạch giá cả.</li>
+                                <li>Nói không với hàng giả.</li>
+                                <li>Dám nhận lỗi bảo hành.</li>
+                            </ul>
+                        </div>
+                         <div class="build-item bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all" style="transition-delay: 100ms">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto"><i class="fas fa-hand-holding-heart text-3xl text-green-600"></i></div>
+                            <h3 class="font-oswald text-xl text-center mb-2 text-green-800">2. Tư Duy Khách Hàng</h3>
+                            <ul class="text-xs text-gray-600 space-y-1 list-disc pl-4">
+                                <li>Hiểu nỗi đau "xe nằm đường".</li>
+                                <li>Phục vụ 24/7.</li>
+                                <li>Đồng hành trọn vòng đời xe.</li>
+                            </ul>
+                        </div>
+                         <div class="build-item bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all" style="transition-delay: 200ms">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto"><i class="fas fa-fire text-3xl text-red-600"></i></div>
+                            <h3 class="font-oswald text-xl text-center mb-2 text-primary">3. Doanh Chủ</h3>
+                            <ul class="text-xs text-gray-600 space-y-1 list-disc pl-4">
+                                <li>Sở hữu P&L Chi nhánh.</li>
+                                <li>Tự quyết, tự chịu trách nhiệm.</li>
+                                <li>Chi tiêu như tiền túi của mình.</li>
+                            </ul>
+                        </div>
+                         <div class="build-item bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all" style="transition-delay: 300ms">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 mx-auto"><i class="fas fa-chart-network text-3xl text-purple-600"></i></div>
+                            <h3 class="font-oswald text-xl text-center mb-2 text-purple-800">4. Dữ Liệu</h3>
+                            <ul class="text-xs text-gray-600 space-y-1 list-disc pl-4">
+                                <li>Quản trị tồn kho chuẩn xác.</li>
+                                <li>Dự báo nhu cầu phụ tùng.</li>
+                                <li>KPIs real-time.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: INTEGRITY DEEP DIVE -->
+                <div class="slide flex-col h-full" id="slide-6">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="bg-blue-600 text-white p-3 rounded-lg"><i class="fas fa-shield-alt text-3xl"></i></div>
+                        <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900">Trụ Cột 1: Chính Trực - "Thử Thách 200k"</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-8 h-full">
+                        <!-- Left: Scenario -->
+                        <div class="md:col-span-2 space-y-4">
+                            <div class="build-item bg-gray-100 p-6 rounded-xl border border-gray-300">
+                                <h3 class="font-bold text-lg text-gray-700 mb-3 uppercase">Tình Huống Thực Tế</h3>
+                                <p class="text-gray-600 italic text-sm mb-4">
+                                    "Khách hàng thân thiết: <em>'Chú mày lắp cho anh cái lọc gió hàng ngoài đi, rẻ hơn hãng 200k, anh chạy tạm chuyến này về rồi tính.'</em>"
+                                </p>
+                                <p class="text-sm font-bold text-red-600">Cám dỗ:</p>
+                                <ul class="list-disc list-inside text-sm text-gray-600">
+                                    <li>Làm hài lòng khách ngay lập tức.</li>
+                                    <li>Có thể ăn chênh lệch giá.</li>
+                                    <li>Không bị sếp biết (nếu không xuất hóa đơn).</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Action Script -->
+                        <div class="md:col-span-3 space-y-4">
+                            <div class="build-item bg-blue-50 p-6 rounded-xl border-l-8 border-blue-600 shadow-xl">
+                                <h3 class="font-bold text-xl text-blue-900 mb-4">Hành Xử Đúng DNA Vimid</h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex gap-4">
+                                        <div class="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-800 shrink-0">1</div>
+                                        <div>
+                                            <p class="font-bold text-gray-800 text-sm">Từ chối kiên quyết nhưng tôn trọng</p>
+                                            <p class="text-sm text-gray-600 bg-white p-2 rounded border border-gray-200 mt-1">"Em rất muốn hỗ trợ anh tiết kiệm, nhưng quy định công ty em không được phép lắp hàng ngoài, vì rủi ro cho xe của anh lớn quá."</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex gap-4">
+                                        <div class="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-800 shrink-0">2</div>
+                                        <div>
+                                            <p class="font-bold text-gray-800 text-sm">Giáo dục khách hàng (Consulting)</p>
+                                            <p class="text-sm text-gray-600 bg-white p-2 rounded border border-gray-200 mt-1">"Anh ơi, cái lọc gió này rẻ hơn 200k, nhưng nếu bụi vào buồng đốt làm xước nòng xylanh, tiền đại tu máy hết <strong>50 triệu</strong> và xe nằm xưởng 10 ngày. Anh tính xem cái nào lợi hơn?"</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex gap-4">
+                                        <div class="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-800 shrink-0">3</div>
+                                        <div>
+                                            <p class="font-bold text-gray-800 text-sm">Đưa giải pháp thay thế</p>
+                                            <p class="text-sm text-gray-600 mt-1">"Nếu anh đang kẹt tiền mặt, bên em có chương trình trả chậm phụ tùng cho khách VIP..."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: ENTREPRENEURSHIP DETAIL -->
+                <div class="slide flex-col h-full" id="slide-7">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="bg-primary text-white p-3 rounded-lg"><i class="fas fa-briefcase text-3xl"></i></div>
+                        <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900">Trụ Cột 3: Tinh Thần Doanh Chủ (P&L Ownership)</h2>
+                    </div>
+                    <div class="grid grid-cols-2 gap-10 h-full">
+                        <!-- Old Mindset -->
+                        <div class="build-item bg-gray-100 p-8 rounded-xl border border-gray-300 opacity-70">
+                            <h3 class="font-bold text-2xl mb-4 text-gray-500 line-through decoration-2">Tư Duy Cũ: Làm Thuê</h3>
+                            <ul class="space-y-6">
+                                <li class="flex items-start">
+                                    <i class="fas fa-times-circle text-gray-400 mt-1 mr-3 text-xl"></i>
+                                    <div>
+                                        <strong>Chờ duyệt chi:</strong>
+                                        <p class="text-sm text-gray-500">"Khách muốn tặng thêm bộ lót sàn 500k, em phải làm tờ trình gửi về Hà Nội duyệt 3 ngày." -> Khách bỏ đi mua chỗ khác.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-times-circle text-gray-400 mt-1 mr-3 text-xl"></i>
+                                    <div>
+                                        <strong>Lãng phí:</strong>
+                                        <p class="text-sm text-gray-500">"Điện nước ở trạm cứ bật thoải mái, công ty trả tiền mà."</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- New Mindset -->
+                        <div class="build-item bg-white p-8 rounded-xl border-2 border-primary shadow-2xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 rounded-bl">VIMID STANDARD</div>
+                            <h3 class="font-bold text-2xl mb-6 text-primary">Tư Duy Mới: Làm Chủ</h3>
+                            
+                            <div class="space-y-6">
+                                <div class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-600 mt-1 mr-3 text-xl"></i>
+                                    <div>
+                                        <strong>Quyền tự quyết ngân sách (DoA):</strong>
+                                        <p class="text-sm text-gray-800 font-medium">Giám đốc Chi nhánh được quyền quyết định chiết khấu/khuyến mãi trong biên độ <strong>2%</strong> lợi nhuận mà không cần xin phép.</p>
+                                        <p class="text-xs text-gray-500 mt-1">-> Chốt khách nóng ngay tại bàn đàm phán.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-600 mt-1 mr-3 text-xl"></i>
+                                    <div>
+                                        <strong>Tối ưu từng đồng chi phí:</strong>
+                                        <p class="text-sm text-gray-800 font-medium">Tự đi chợ nấu ăn trưa cho anh em thợ thay vì đặt cơm hộp đắt đỏ. Tận dụng dầu thải để bán lại hoặc tái sử dụng cho việc khác.</p>
+                                        <p class="text-xs text-gray-500 mt-1">-> Tiết kiệm 1 đồng là tăng 1 đồng lợi nhuận vào túi mình (thưởng P&L).</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: DATA DRIVEN DASHBOARD -->
+                <div class="slide flex-col h-full" id="slide-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <i class="fas fa-chart-pie text-4xl text-purple-600"></i>
+                        <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900">Trụ Cột 4: Quản Trị Bằng Số Liệu (Real-time)</h2>
+                    </div>
+                    <!-- Dashboard Container -->
+                    <div class="flex-1 bg-gray-800 rounded-xl p-6 shadow-2xl border border-gray-600 text-white overflow-hidden w-full">
+                        <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
+                            <span class="text-sm text-gray-400 font-mono tracking-widest"><i class="fas fa-satellite-dish mr-2 animate-pulse text-green-400"></i>VIMID LIVE OPERATIONS</span>
+                            <span class="text-xs bg-gray-700 px-2 py-1 rounded">CN: Hải Phòng</span>
+                        </div>
+                        
+                        <!-- Top Metrics -->
+                        <div class="grid grid-cols-4 gap-4 mb-6">
+                            <div class="bg-gray-700 p-4 rounded build-item border-l-4 border-green-500">
+                                <p class="text-gray-400 text-xs uppercase">Doanh số Xe</p>
+                                <p class="text-2xl font-bold">12 Xe</p>
+                                <p class="text-xs text-green-400"><i class="fas fa-arrow-up"></i> 110% Target</p>
+                            </div>
+                            <div class="bg-gray-700 p-4 rounded build-item border-l-4 border-yellow-500" style="transition-delay: 100ms">
+                                <p class="text-gray-400 text-xs uppercase">Tồn kho Phụ tùng</p>
+                                <p class="text-2xl font-bold">5.2 Tỷ</p>
+                                <p class="text-xs text-yellow-400">Cảnh báo: Tồn > 90 ngày: 15%</p>
+                            </div>
+                            <div class="bg-gray-700 p-4 rounded build-item border-l-4 border-blue-500" style="transition-delay: 200ms">
+                                <p class="text-gray-400 text-xs uppercase">Lượt xe vào xưởng</p>
+                                <p class="text-2xl font-bold">45 Lượt</p>
+                                <p class="text-xs text-gray-400">Trung bình: 1.5h/xe</p>
+                            </div>
+                             <div class="bg-gray-700 p-4 rounded build-item border-l-4 border-red-500" style="transition-delay: 300ms">
+                                <p class="text-gray-400 text-xs uppercase">Công nợ Quá hạn</p>
+                                <p class="text-2xl font-bold text-red-400">850 Tr</p>
+                                <p class="text-xs text-white bg-red-600 px-1 rounded inline-block mt-1">STOP Bán chịu</p>
+                            </div>
+                        </div>
+
+                        <!-- Deep Dive Insight -->
+                        <div class="grid grid-cols-3 gap-6 h-48">
+                            <div class="col-span-2 bg-gray-700/50 rounded p-4 border border-gray-600 build-item relative">
+                                <h4 class="text-sm font-bold text-purple-300 mb-2">Phân tích Phụ tùng "Chết" (Dead Stock)</h4>
+                                <div class="w-full h-2 bg-gray-600 rounded-full mb-3 overflow-hidden">
+                                    <div class="h-full bg-purple-500 w-[45%]"></div>
+                                </div>
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    Hệ thống phát hiện 20 bộ nhíp xe ben 3 chân đã nằm kho 180 ngày. <br>
+                                    <strong>Đề xuất hành động:</strong> Chuyển về kho Quảng Ninh (đang có nhu cầu cao) hoặc làm chương trình giảm giá 30% xả hàng tuần này.
+                                </p>
+                                <button class="absolute bottom-4 right-4 bg-purple-600 hover:bg-purple-500 text-xs px-3 py-1 rounded">Kích hoạt điều chuyển</button>
+                            </div>
+                             <div class="col-span-1 bg-gray-700/50 rounded p-4 border border-gray-600 build-item flex flex-col justify-center items-center text-center">
+                                <div class="w-20 h-20 rounded-full border-4 border-green-500 flex items-center justify-center text-xl font-bold mb-2">72</div>
+                                <p class="text-xs uppercase font-bold text-green-400">NPS Score</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Khách hàng rất hài lòng về thái độ phục vụ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: FINANCE INTEGRATION -->
+                <div class="slide flex-col h-full" id="slide-9">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-2 vimid-header">Tài Chính: Kiến Trúc Sư Giải Pháp</h2>
+                    <p class="text-gray-500 mb-8 pl-4">Chuyển từ "Kế toán ghi chép" sang "Tư vấn tài chính cho khách hàng".</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="build-item bg-white shadow-lg p-6 rounded-lg border-t-4 border-yellow-500 group hover:shadow-2xl transition-all">
+                            <div class="bg-yellow-100 w-12 h-12 rounded-full flex items-center justify-center mb-4"><i class="fas fa-university text-yellow-600"></i></div>
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">1. Gói Vay May Đo</h3>
+                            <p class="text-sm text-gray-600 mb-4">Khách mua lô 10 xe. Kế toán không chỉ xuất hóa đơn, mà ngồi cùng ngân hàng để thiết kế gói vay ân hạn nợ gốc 6 tháng đầu cho khách.</p>
+                            <span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded">Tăng khả năng chốt đơn</span>
+                        </div>
+
+                        <div class="build-item bg-white shadow-lg p-6 rounded-lg border-t-4 border-red-500 group hover:shadow-2xl transition-all" style="transition-delay: 100ms">
+                             <div class="bg-red-100 w-12 h-12 rounded-full flex items-center justify-center mb-4"><i class="fas fa-bell text-red-600"></i></div>
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">2. Radar Công Nợ</h3>
+                            <p class="text-sm text-gray-600 mb-4">Phân tích hành vi thanh toán. Khách A thường trả chậm 5 ngày -> OK. Khách B đột nhiên trả chậm 30 ngày -> Cảnh báo Sales ngừng cấp hàng ngay.</p>
+                             <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded">Giảm rủi ro vốn</span>
+                        </div>
+
+                        <div class="build-item bg-white shadow-lg p-6 rounded-lg border-t-4 border-blue-500 group hover:shadow-2xl transition-all" style="transition-delay: 200ms">
+                             <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4"><i class="fas fa-boxes text-blue-600"></i></div>
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">3. Tối Ưu Tồn Kho</h3>
+                            <p class="text-sm text-gray-600 mb-4">Tính toán chi phí cơ hội của việc trữ 1 tỷ tiền lốp xe trong kho. Đề xuất luân chuyển hàng giữa các chi nhánh thay vì nhập mới.</p>
+                             <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Tăng vòng quay vốn</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: SILO BREAKING (PROCESS MAP) -->
+                <div class="slide flex-col h-full" id="slide-10">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-6 vimid-header">Quy Trình PDI Liên Thông (Sales - Service)</h2>
+                    <div class="w-full h-full flex flex-col justify-center">
+                        <div class="relative flex justify-between items-center w-full px-4">
+                            <!-- Line -->
+                            <div class="absolute top-1/2 left-0 w-full h-2 bg-gray-200 -z-10 transform -translate-y-1/2 rounded-full"></div>
+                            
+                            <!-- Step 1 -->
+                            <div class="build-item flex flex-col items-center w-1/4 text-center group">
+                                <div class="w-16 h-16 bg-red-100 border-4 border-red-500 rounded-full flex items-center justify-center text-red-700 font-bold text-xl mb-4 shadow-lg z-10 group-hover:scale-110 transition-transform">1</div>
+                                <h3 class="font-bold text-lg text-primary">T-24h: Lệnh Xuất Xe</h3>
+                                <div class="bg-white p-3 rounded shadow border border-gray-200 mt-2 text-sm text-gray-600 w-11/12">
+                                    <span class="font-bold text-gray-800">Sales</span> tạo lệnh trên ERP. Ghi rõ giờ giao và phụ kiện lắp thêm (nếu có).
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="build-item flex flex-col items-center w-1/4 text-center group" style="transition-delay: 100ms">
+                                <div class="w-16 h-16 bg-blue-100 border-4 border-blue-500 rounded-full flex items-center justify-center text-blue-700 font-bold text-xl mb-4 shadow-lg z-10 group-hover:scale-110 transition-transform">2</div>
+                                <h3 class="font-bold text-lg text-blue-800">T-4h: PDI Check</h3>
+                                <div class="bg-white p-3 rounded shadow border border-gray-200 mt-2 text-sm text-gray-600 w-11/12">
+                                    <span class="font-bold text-gray-800">KTV</span> nhận lệnh. Kiểm tra 36 điểm (Dầu, mỡ, lốp, điện...). Rửa xe sạch sẽ.
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="build-item flex flex-col items-center w-1/4 text-center group" style="transition-delay: 200ms">
+                                <div class="w-16 h-16 bg-yellow-100 border-4 border-yellow-500 rounded-full flex items-center justify-center text-yellow-700 font-bold text-xl mb-4 shadow-lg z-10 group-hover:scale-110 transition-transform">3</div>
+                                <h3 class="font-bold text-lg text-yellow-800">T-1h: Nghiệm Thu</h3>
+                                <div class="bg-white p-3 rounded shadow border border-gray-200 mt-2 text-sm text-gray-600 w-11/12">
+                                    <span class="font-bold text-gray-800">Sales & Quản đốc</span> cùng ký biên bản "Sẵn sàng giao". Chụp ảnh xe lên nhóm Zalo.
+                                </div>
+                            </div>
+
+                             <!-- Step 4 -->
+                             <div class="build-item flex flex-col items-center w-1/4 text-center group" style="transition-delay: 300ms">
+                                <div class="w-16 h-16 bg-green-100 border-4 border-green-500 rounded-full flex items-center justify-center text-green-700 font-bold text-xl mb-4 shadow-lg z-10 group-hover:scale-110 transition-transform">4</div>
+                                <h3 class="font-bold text-lg text-green-800">T-0: Bàn Giao</h3>
+                                <div class="bg-white p-3 rounded shadow border border-gray-200 mt-2 text-sm text-gray-600 w-11/12">
+                                    Trao xe + Hoa cho khách. Hướng dẫn vận hành nhanh. Khách hàng chấm điểm 5 sao.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: IT SYSTEM -->
+                <div class="slide flex-col h-full" id="slide-11">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-8 vimid-header">Hệ Sinh Thái Số: Kết Nối Vạn Vật</h2>
+                    <div class="flex items-center justify-center h-full relative">
+                        <!-- Core -->
+                        <div class="w-64 h-64 rounded-full bg-gradient-to-br from-gray-900 to-gray-800 text-white flex flex-col items-center justify-center z-10 shadow-[0_0_60px_rgba(183,28,28,0.4)] build-item border-4 border-primary">
+                            <i class="fas fa-server text-5xl mb-4 text-primary"></i>
+                            <span class="font-bold text-xl text-center">VIMID ERP<br>CORE</span>
+                            <span class="text-xs text-gray-400 mt-2">Dữ liệu tập trung</span>
+                        </div>
+
+                        <!-- Satellite Apps -->
+                        <div class="absolute top-0 left-10 build-item bg-white p-4 rounded-xl shadow-lg border border-gray-200 text-center w-56 transform hover:scale-105 transition-transform">
+                            <div class="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fas fa-mobile-alt text-blue-600"></i></div>
+                            <h4 class="font-bold text-gray-800">Vimid Driver App</h4>
+                            <p class="text-xs text-gray-500 mt-1">Tài xế đặt lịch bảo dưỡng, báo cứu hộ khẩn cấp kèm định vị GPS.</p>
+                        </div>
+
+                        <div class="absolute top-0 right-10 build-item bg-white p-4 rounded-xl shadow-lg border border-gray-200 text-center w-56 transform hover:scale-105 transition-transform">
+                            <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fas fa-user-check text-green-600"></i></div>
+                            <h4 class="font-bold text-gray-800">Sales Tablet</h4>
+                            <p class="text-xs text-gray-500 mt-1">Check tồn kho xe theo thời gian thực (Real-time stock) khi đang ngồi cafe với khách.</p>
+                        </div>
+
+                        <div class="absolute bottom-0 right-10 build-item bg-white p-4 rounded-xl shadow-lg border border-gray-200 text-center w-56 transform hover:scale-105 transition-transform">
+                            <div class="bg-orange-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fas fa-qrcode text-orange-600"></i></div>
+                            <h4 class="font-bold text-gray-800">WMS (Kho)</h4>
+                            <p class="text-xs text-gray-500 mt-1">Quét QR Code xuất/nhập phụ tùng. Chống nhầm lẫn mã hàng.</p>
+                        </div>
+
+                        <div class="absolute bottom-0 left-10 build-item bg-white p-4 rounded-xl shadow-lg border border-gray-200 text-center w-56 transform hover:scale-105 transition-transform">
+                            <div class="bg-purple-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fas fa-chart-line text-purple-600"></i></div>
+                            <h4 class="font-bold text-gray-800">BI Dashboard</h4>
+                            <p class="text-xs text-gray-500 mt-1">Báo cáo P&L tự động cho Giám đốc Chi nhánh vào 8h sáng mỗi ngày.</p>
+                        </div>
+
+                        <!-- Connector Lines (Visual Only) -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none -z-10 opacity-30">
+                            <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#B71C1C" stroke-width="2" stroke-dasharray="5,5" />
+                            <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#B71C1C" stroke-width="2" stroke-dasharray="5,5" />
+                            <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#B71C1C" stroke-width="2" stroke-dasharray="5,5" />
+                            <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#B71C1C" stroke-width="2" stroke-dasharray="5,5" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- SLIDE 12: RECRUITMENT -->
+                <div class="slide flex-col h-full" id="slide-12">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-6 vimid-header">Tuyển Dụng: Bộ Câu Hỏi STAR</h2>
+                    <p class="mb-6 text-gray-600">Áp dụng phương pháp STAR (Situation - Task - Action - Result) để tìm đúng người có DNA.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full h-full">
+                        <!-- Profile: Mechanic -->
+                        <div class="build-item bg-white p-6 rounded-xl border-t-4 border-primary shadow-lg">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center"><i class="fas fa-wrench text-gray-600"></i></div>
+                                <h3 class="font-bold text-xl text-gray-800">Vị trí: Kỹ Thuật Viên</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <p class="font-bold text-xs text-primary uppercase">Câu hỏi Tình huống (Service Mindset)</p>
+                                    <p class="text-sm italic text-gray-700 mt-1">"Hãy kể về lần bạn phải sửa xe cho một khách hàng đang rất nóng giận vì xe hỏng làm lỡ chuyến hàng."</p>
+                                </div>
+                                <div class="space-y-2">
+                                    <p class="text-xs font-bold text-gray-500">ĐÁNH GIÁ CÂU TRẢ LỜI:</p>
+                                    <p class="text-sm flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <strong>Đạt:</strong> Lắng nghe khách xả giận, mời nước, ưu tiên kiểm tra xe ngay, giải thích rõ nguyên nhân.</p>
+                                    <p class="text-sm flex items-start"><i class="fas fa-times text-red-500 mt-1 mr-2"></i> <strong>Trượt:</strong> Cãi tay đôi với khách, đổ lỗi do khách chở quá tải nên xe mới hỏng.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profile: Sales -->
+                        <div class="build-item bg-white p-6 rounded-xl border-t-4 border-blue-600 shadow-lg">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center"><i class="fas fa-user-tie text-gray-600"></i></div>
+                                <h3 class="font-bold text-xl text-gray-800">Vị trí: Kinh Doanh</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <p class="font-bold text-xs text-blue-600 uppercase">Câu hỏi Tình huống (Integrity)</p>
+                                    <p class="text-sm italic text-gray-700 mt-1">"Bạn làm gì khi phát hiện đồng nghiệp đang bán phá giá vùng để cướp khách của đại lý khác?"</p>
+                                </div>
+                                <div class="space-y-2">
+                                    <p class="text-xs font-bold text-gray-500">ĐÁNH GIÁ CÂU TRẢ LỜI:</p>
+                                    <p class="text-sm flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <strong>Đạt:</strong> Nhắc nhở đồng nghiệp, báo cáo cấp trên để bảo vệ chính sách giá chung.</p>
+                                    <p class="text-sm flex items-start"><i class="fas fa-times text-red-500 mt-1 mr-2"></i> <strong>Trượt:</strong> Im lặng, hoặc cũng bán phá giá theo để cạnh tranh.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 13: SOP TABLE DETAIL -->
+                <div class="slide flex-col h-full" id="slide-13">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-4 vimid-header">Quy Trình Vận Hành & Chế Tài (SOP)</h2>
+                    <div class="w-full overflow-hidden rounded-lg shadow-lg border border-gray-200 build-item">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-800 text-white">
+                                    <th class="p-4 w-1/4">Quy Trình</th>
+                                    <th class="p-4 w-1/3">Hành Động Chuẩn (Do)</th>
+                                    <th class="p-4 bg-primary text-white w-1/4">Yêu Cầu DNA (Attitude)</th>
+                                    <th class="p-4 bg-red-900 text-white w-1/6">Hậu Quả (Don't)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white text-sm">
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-4 font-bold border-r">Báo giá Sửa chữa</td>
+                                    <td class="p-4 border-r">In phiếu báo giá từ phần mềm, có chữ ký Cố vấn dịch vụ.</td>
+                                    <td class="p-4 bg-red-50 text-red-800 border-r border-red-100">
+                                        <strong>Minh bạch:</strong> Giải thích rõ từng hạng mục. Không ghi khống công thợ.
+                                    </td>
+                                    <td class="p-4 text-red-600 font-bold">Sa thải ngay nếu phát hiện kê giá.</td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-4 font-bold border-r">Xử lý Khiếu nại</td>
+                                    <td class="p-4 border-r">Tiếp nhận trong 5 phút. Phản hồi phương án trong 2h.</td>
+                                    <td class="p-4 bg-red-50 text-red-800 border-r border-red-100">
+                                        <strong>Tận tâm:</strong> Xin lỗi trước, giải thích sau. Đứng về phía khách hàng.
+                                    </td>
+                                    <td class="p-4 text-gray-600">Trừ điểm KPI thái độ tháng.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-4 font-bold border-r">Quản lý Kho</td>
+                                    <td class="p-4 border-r">Kiểm kê định kỳ thứ 7 hàng tuần.</td>
+                                    <td class="p-4 bg-red-50 text-red-800 border-r border-red-100">
+                                        <strong>Chính trực:</strong> Báo cáo trung thực số liệu mất mát/hỏng hóc, không giấu diếm.
+                                    </td>
+                                    <td class="p-4 text-gray-600">Đền bù 100% giá trị hàng thiếu.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SLIDE 14: PERFORMANCE MATRIX DETAIL -->
+                <div class="slide flex-col h-full" id="slide-14">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-6 vimid-header">Ma Trận Đánh Giá & Hành Động</h2>
+                    <div class="flex-1 relative bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                        <!-- Labels -->
+                        <div class="absolute -left-6 top-1/2 -rotate-90 font-bold text-gray-400 tracking-widest">KẾT QUẢ (KPI)</div>
+                        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 font-bold text-gray-400 tracking-widest">HÀNH VI (DNA)</div>
+
+                        <div class="grid grid-cols-2 grid-rows-2 h-full gap-4">
+                            <!-- Q1 -->
+                            <div class="bg-red-50 p-6 border-2 border-red-200 build-item hover:bg-red-100 transition-colors relative group rounded-tl-xl">
+                                <span class="font-bold text-red-800 text-lg block mb-2"><i class="fas fa-skull-crossbones mr-2"></i>Nhân sự Độc hại</span>
+                                <p class="text-sm text-gray-700 mb-4">Doanh số cao nhưng gian lận, gây chia rẽ nội bộ, coi thường quy trình.</p>
+                                <div class="bg-white p-3 rounded shadow-sm">
+                                    <p class="text-xs font-bold text-red-600">HÀNH ĐỘNG:</p>
+                                    <p class="text-xs">1. Cảnh cáo văn bản lần 1.</p>
+                                    <p class="text-xs">2. Sa thải nếu tái phạm (Zero Tolerance).</p>
+                                </div>
+                            </div>
+
+                            <!-- Q2 -->
+                            <div class="bg-green-50 p-6 border-2 border-green-200 build-item hover:bg-green-100 transition-colors relative group rounded-tr-xl">
+                                <span class="font-bold text-green-800 text-lg block mb-2"><i class="fas fa-star mr-2"></i>Nhân sự Cốt lõi (Role Model)</span>
+                                <p class="text-sm text-gray-700 mb-4">Kết quả xuất sắc + Văn hóa chuẩn mực. Là đại sứ thương hiệu.</p>
+                                <div class="bg-white p-3 rounded shadow-sm">
+                                    <p class="text-xs font-bold text-green-600">HÀNH ĐỘNG:</p>
+                                    <p class="text-xs">1. Tăng lương/Thưởng nóng.</p>
+                                    <p class="text-xs">2. Quy hoạch vào đội ngũ kế cận (Successor).</p>
+                                </div>
+                            </div>
+
+                            <!-- Q3 -->
+                            <div class="bg-gray-100 p-6 border-2 border-gray-300 build-item hover:bg-gray-200 transition-colors rounded-bl-xl">
+                                <span class="font-bold text-gray-600 text-lg block mb-2">Nhân sự Cần thay thế</span>
+                                <p class="text-sm text-gray-600 mb-4">Không đạt KPI và thái độ tiêu cực.</p>
+                                <div class="bg-white p-3 rounded shadow-sm">
+                                    <p class="text-xs font-bold text-gray-600">HÀNH ĐỘNG:</p>
+                                    <p class="text-xs">Cho thôi việc theo lộ trình (PIP thất bại).</p>
+                                </div>
+                            </div>
+
+                            <!-- Q4 -->
+                            <div class="bg-yellow-50 p-6 border-2 border-yellow-200 build-item hover:bg-yellow-100 transition-colors rounded-br-xl">
+                                <span class="font-bold text-yellow-800 text-lg block mb-2">Nhân sự Tiềm năng</span>
+                                <p class="text-sm text-gray-700 mb-4">Thái độ rất tốt, chăm chỉ nhưng kỹ năng còn yếu.</p>
+                                <div class="bg-white p-3 rounded shadow-sm">
+                                    <p class="text-xs font-bold text-yellow-600">HÀNH ĐỘNG:</p>
+                                    <p class="text-xs">1. Đào tạo nghiệp vụ (Coaching 1:1).</p>
+                                    <p class="text-xs">2. Cho thêm thời gian thử thách (3 tháng).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 15: L&D DETAIL -->
+                <div class="slide flex-col h-full" id="slide-15">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-8 vimid-header">Lộ Trình Đào Tạo Thực Chiến</h2>
+                    <div class="space-y-6 h-full pb-8">
+                        <div class="build-item flex gap-6 items-center bg-white p-6 rounded-xl shadow-lg border-l-8 border-primary">
+                            <div class="w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-inner">70%</div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-gray-800">Trải Nghiệm Thực Tế (Job Rotation)</h3>
+                                <p class="text-gray-600 mb-2">Không ngồi điều hòa học lý thuyết. Sales mới phải xuống xưởng mặc áo lấm dầu mỡ.</p>
+                                <div class="bg-gray-100 p-3 rounded text-sm">
+                                    <strong>Chương trình "Một ngày làm Thợ":</strong> Nhân viên kinh doanh phải dành 1 tuần hỗ trợ kỹ thuật viên thay dầu, bơm mỡ để hiểu cấu tạo xe và hiểu sự vất vả của bộ phận dịch vụ.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="build-item flex gap-6 items-center bg-white p-6 rounded-xl shadow-lg border-l-8 border-secondary">
+                            <div class="w-20 h-20 bg-secondary text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-inner">20%</div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-gray-800">Kèm Cặp & Phản Hồi (Mentoring)</h3>
+                                <div class="bg-gray-100 p-3 rounded text-sm">
+                                    <strong>Shadowing:</strong> Nhân viên mới đi theo "Sư phụ" (Best Seller/KTV giỏi) trong 1 tháng đầu. Quan sát cách sư phụ chốt khách, cách xử lý sự cố, sau đó thực hành lại dưới sự giám sát.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="build-item flex gap-6 items-center bg-white p-6 rounded-xl shadow-lg border-l-8 border-gray-400">
+                            <div class="w-20 h-20 bg-gray-500 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-inner">10%</div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-gray-800">Đào Tạo Tập Trung</h3>
+                                <div class="bg-gray-100 p-3 rounded text-sm">
+                                    Các khóa học online trên E-learning Vimid về tính năng sản phẩm mới, cập nhật chính sách bảo hành, kỹ năng mềm.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 16: RITUALS DETAIL -->
+                <div class="slide flex-col h-full" id="slide-16">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-6 vimid-header">Nghi Thức Văn Hóa Hàng Ngày</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+                        <div class="build-item bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                            <h3 class="font-bold text-2xl text-primary mb-4 flex items-center"><i class="fas fa-tools mr-3"></i>Toolbox Talk (Họp Đầu Ca)</h3>
+                            <p class="text-sm text-gray-500 mb-4 italic">Thời gian: 7:45 - 8:00 sáng mỗi ngày tại Xưởng.</p>
+                            <div class="space-y-3">
+                                <p class="text-gray-700 bg-gray-50 p-2 rounded"><strong>1. An toàn:</strong> Kiểm tra trang bảo hộ, nhắc nhở về an toàn điện/nâng hạ.</p>
+                                <p class="text-gray-700 bg-gray-50 p-2 rounded"><strong>2. Chia sẻ nhanh:</strong> Quản đốc kể về 1 lỗi kỹ thuật phát hiện hôm qua để mọi người cùng tránh.</p>
+                                <p class="text-gray-700 bg-gray-50 p-2 rounded"><strong>3. Hô khẩu hiệu:</strong> "VIMID - Tận tâm trên từng cây số!" để lấy năng lượng.</p>
+                            </div>
+                        </div>
+
+                        <div class="build-item bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                            <h3 class="font-bold text-2xl text-primary mb-4 flex items-center"><i class="fas fa-handshake mr-3"></i>Lễ Bàn Giao Xe 5 Sao</h3>
+                            <p class="text-sm text-gray-500 mb-4 italic">Biến việc nhận xe thành kỷ niệm đáng nhớ của khách hàng.</p>
+                            <div class="space-y-3">
+                                <p class="text-gray-700 bg-gray-50 p-2 rounded"><strong>1. Chuẩn bị:</strong> Xe rửa sạch bóng, thắt nơ đỏ, trải thảm đỏ.</p>
+                                <p class="text-gray-700 bg-gray-50 p-2 rounded"><strong>2. Quà tặng:</strong> Tặng khách hàng bộ "Vimid Care Kit" (Áo, mũ, bình giữ nhiệt, sổ tay bảo dưỡng).</p>
+                                <p class="text-gray-700 bg-gray-50 p-2 rounded"><strong>3. Chụp ảnh:</strong> In ảnh tặng khách ngay tại chỗ hoặc gửi khung hình Zalo đẹp.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 17: INNOVATION - KAIZEN -->
+                <div class="slide flex-col h-full" id="slide-17">
+                    <h2 contenteditable="true" class="font-oswald text-4xl text-gray-900 mb-6 vimid-header">Đổi Mới: Văn Hóa Kaizen Thực Dụng</h2>
+                    <div class="grid grid-cols-2 gap-10 h-full items-center">
+                        <div class="build-item bg-gray-100 p-8 rounded-xl border border-gray-300 h-full flex flex-col justify-center">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">Tại sao cần Kaizen?</h3>
+                            <p class="text-lg text-gray-600 mb-6">"Chúng ta không cần những phát minh vĩ đại. Chúng ta cần những cải tiến nhỏ mỗi ngày để công việc trôi chảy hơn, đỡ vất vả hơn."</p>
+                            <div class="bg-white p-4 rounded shadow border-l-4 border-yellow-400">
+                                <p class="font-bold text-gray-800">Chính sách thưởng nóng:</p>
+                                <p class="text-sm text-gray-600">500.000 VNĐ cho mỗi ý tưởng được áp dụng.</p>
+                                <p class="text-sm text-gray-600">5.000.000 VNĐ cho ý tưởng tiết kiệm chi phí > 100tr/năm.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="build-item space-y-6">
+                            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 bg-green-500 text-white text-xs px-2 py-1 font-bold">CASE STUDY</div>
+                                <h4 class="font-bold text-xl text-primary mb-2">Cải tiến: Xe đẩy phụ tùng lưu động</h4>
+                                <p class="text-sm text-gray-700 mb-2"><strong>Trước đây:</strong> Thợ phải chạy đi chạy lại kho phụ tùng 5-10 lần để lấy cờ lê, ốc vít, giẻ lau -> Mất thời gian, mệt mỏi.</p>
+                                <p class="text-sm text-gray-700"><strong>Cải tiến:</strong> Chế tạo xe đẩy 3 tầng chứa đủ dụng cụ cho 1 ca làm việc, đẩy thẳng ra sát xe tải đang sửa -> Giảm 30 phút di chuyển/xe.</p>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 bg-green-500 text-white text-xs px-2 py-1 font-bold">CASE STUDY</div>
+                                <h4 class="font-bold text-xl text-primary mb-2">Cải tiến: QR Code trên xe</h4>
+                                <p class="text-sm text-gray-700">Dán QR Code lên cánh cửa xe khách hàng. Khi xe gặp sự cố, tài xế chỉ cần quét mã là hiện số hotline cứu hộ gần nhất và lịch sử bảo dưỡng của xe -> Khách hàng cực kỳ an tâm.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 18: CALL TO ACTION -->
+                <div class="slide flex-col justify-center items-center h-full text-center" id="slide-18">
+                    <div class="mb-8 animate-pulse-slow">
+                        <i class="fas fa-flag-checkered text-7xl text-primary"></i>
+                    </div>
+                    <h2 contenteditable="true" class="font-oswald text-6xl md:text-7xl text-gray-900 mb-6">Cam Kết Hành Động: 90 Ngày</h2>
+                    
+                    <div class="grid grid-cols-3 gap-6 max-w-5xl mx-auto mb-12 w-full text-left">
+                        <div class="build-item bg-white p-6 rounded-lg shadow-lg border-t-8 border-gray-400">
+                            <h3 class="font-bold text-xl text-gray-600 mb-2">Tháng 1: Truyền thông</h3>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-2">
+                                <li>Tổ chức lễ ký cam kết DNA tại tất cả chi nhánh.</li>
+                                <li>Đào tạo hội nhập lại cho 100% nhân sự.</li>
+                                <li>Treo poster giá trị cốt lõi tại xưởng & văn phòng.</li>
+                            </ul>
+                        </div>
+                        <div class="build-item bg-white p-6 rounded-lg shadow-lg border-t-8 border-blue-600">
+                            <h3 class="font-bold text-xl text-blue-800 mb-2">Tháng 2: Áp dụng</h3>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-2">
+                                <li>Chạy thử nghiệm quy trình PDI liên thông mới.</li>
+                                <li>Áp dụng bảng câu hỏi STAR vào tuyển dụng.</li>
+                                <li>Bắt đầu chấm điểm tuân thủ quy trình (Audit).</li>
+                            </ul>
+                        </div>
+                        <div class="build-item bg-white p-6 rounded-lg shadow-lg border-t-8 border-primary">
+                            <h3 class="font-bold text-xl text-primary mb-2">Tháng 3: Đo lường</h3>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-2">
+                                <li>Đánh giá nhân sự theo ma trận mới.</li>
+                                <li>Khen thưởng "Chiếc Cờ Lê Vàng" đầu tiên.</li>
+                                <li>Khảo sát lại chỉ số hài lòng khách hàng (NPS).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <button onclick="alert('Đã kích hoạt lộ trình 90 ngày chuyển đổi văn hóa VIMID!')" class="bg-primary hover:bg-red-800 text-white font-bold py-5 px-16 rounded shadow-2xl uppercase tracking-[0.2em] text-xl build-item hover:scale-105 transition-transform flex items-center gap-3">
+                        <i class="fas fa-rocket"></i> Kích Hoạt Ngay
+                    </button>
+                </div>
+
+            </div>
+
+             <!-- FOOTER -->
+            <div class="absolute bottom-4 right-8 text-xs text-gray-400 font-mono opacity-50 pointer-events-none">
+                VIMID Internal Training • Confidential
+            </div>
+        </div>
+
+        <!-- CONTROLS BAR -->
+        <div id="controls-bar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900/90 backdrop-blur-md text-white px-6 py-3 rounded-full flex items-center gap-6 shadow-2xl border border-gray-700 transition-all duration-300 z-50 hover:bg-gray-800">
+            <button onclick="prevSlide()" class="hover:text-primary transition-colors focus:outline-none"><i class="fas fa-chevron-left text-xl"></i></button>
+            <div class="text-sm font-mono tracking-widest text-gray-400"><span id="slide-indicator" class="text-white font-bold">01</span> / <span id="total-slides">18</span></div>
+            <button onclick="nextSlide()" class="hover:text-primary transition-colors focus:outline-none"><i class="fas fa-chevron-right text-xl"></i></button>
+            <div class="w-px h-6 bg-gray-600 mx-2"></div>
+            <button onclick="toggleSpotlight()" id="btn-spotlight" class="hover:text-primary transition-colors relative group" title="Spotlight (S)"><i class="fas fa-lightbulb"></i></button>
+            <button onclick="toggleSpeakerMode()" class="hover:text-primary transition-colors relative group" title="Speaker Notes (P)"><i class="fas fa-comment-alt"></i></button>
+            <button onclick="exportToPDF()" class="hover:text-primary transition-colors relative group" title="Export PDF"><i class="fas fa-file-pdf"></i></button>
+            <button onclick="toggleFullscreen()" class="hover:text-primary transition-colors relative group" title="Fullscreen (F)"><i class="fas fa-expand"></i></button>
+        </div>
+
+        <!-- Speaker Notes Modal -->
+        <div id="speaker-notes-modal" class="fixed top-6 right-6 w-96 bg-yellow-50 text-gray-800 p-6 rounded-lg shadow-2xl transform translate-x-full transition-transform duration-300 z-50 border-l-4 border-primary hidden font-serif">
+            <h3 class="font-bold uppercase text-xs text-gray-500 mb-3 tracking-widest">Ghi chú Giảng viên</h3>
+            <div id="speaker-note-content" class="text-base leading-relaxed">Chưa có ghi chú.</div>
+            <button onclick="toggleSpeakerMode()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-800"><i class="fas fa-times"></i></button>
+        </div>
+    </main>
+
+    <script>
+        // --- LOGIC ---
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let isSpotlightActive = false;
+        
+        // VIMID DATA CHART
+        const vimidChartData = {
+            labels: ['Cam kết của Sales', 'Chất lượng Dịch vụ', 'Tuân thủ Quy trình'],
+            datasets: [
+                {
+                    label: 'Kỳ vọng Khách hàng',
+                    data: [9, 9.5, 9],
+                    backgroundColor: 'rgba(183, 28, 28, 0.2)', 
+                    borderColor: 'rgba(183, 28, 28, 1)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Thực tế Hiện tại',
+                    data: [8, 6, 5],
+                    backgroundColor: 'rgba(55, 71, 79, 0.7)',
+                    borderColor: 'rgba(55, 71, 79, 1)',
+                    borderWidth: 2
+                }
+            ]
+        };
+
+        // INIT
+        document.getElementById('total-slides').innerText = totalSlides.toString().padStart(2, '0');
+        updateSlideVisibility();
+        initChart();
+
+        function updateSlideVisibility() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlideIndex) {
+                    slide.classList.add('active');
+                    // Reset Animations
+                    const animatedElements = slide.querySelectorAll('.animate-fade-in-up');
+                    animatedElements.forEach(el => { el.style.animation = 'none'; el.offsetHeight; el.style.animation = null; });
+                    
+                    // Contextual Speaker Notes
+                    let note = "Giới thiệu tổng quan.";
+                    if(index === 2) note = "Nhấn mạnh vào con số 'Biên lợi nhuận 5%'. Đây là lý do chúng ta không thể cạnh tranh bằng giá mãi được.";
+                    if(index === 5) note = "Dừng lại ở đây lâu hơn. Mời 1 anh Trưởng trạm đứng lên chia sẻ xem có gặp tình huống 'Lọc gió giả' này bao giờ chưa?";
+                    if(index === 9) note = "Đây là slide quan trọng nhất về phối hợp Sales-Service. Hãy chỉ rõ bước nào đang bị tắc nghẽn hiện nay.";
+                    document.getElementById('speaker-note-content').innerText = note;
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            document.getElementById('slide-indicator').innerText = (currentSlideIndex + 1).toString().padStart(2, '0');
+        }
+
+        function nextSlide() {
+            const activeSlide = slides[currentSlideIndex];
+            const hiddenBuildItems = activeSlide.querySelectorAll('.build-item:not(.revealed)');
+            if (hiddenBuildItems.length > 0) {
+                hiddenBuildItems[0].classList.add('revealed'); // Show next bullet point
+            } else if (currentSlideIndex < totalSlides - 1) {
+                currentSlideIndex++;
+                updateSlideVisibility();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlideVisibility();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.isContentEditable) return;
+            switch(e.key) {
+                case 'ArrowRight': case ' ': nextSlide(); break;
+                case 'ArrowLeft': prevSlide(); break;
+                case 'f': case 'F': toggleFullscreen(); break;
+                case 's': case 'S': toggleSpotlight(); break;
+                case 'p': case 'P': toggleSpeakerMode(); break;
+            }
+        });
+
+        function toggleFullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else if (document.exitFullscreen) document.exitFullscreen(); }
+        function toggleSpotlight() { isSpotlightActive = !isSpotlightActive; document.getElementById('spotlight-overlay').classList.toggle('hidden'); document.getElementById('btn-spotlight').classList.toggle('text-primary'); document.body.style.cursor = isSpotlightActive ? 'none' : 'default'; }
+        function toggleSpeakerMode() { const modal = document.getElementById('speaker-notes-modal'); modal.classList.toggle('hidden'); setTimeout(() => modal.classList.toggle('translate-x-full'), 10); }
+        document.addEventListener('mousemove', (e) => { if (isSpotlightActive) { const overlay = document.getElementById('spotlight-overlay'); overlay.style.setProperty('--x', e.clientX + 'px'); overlay.style.setProperty('--y', e.clientY + 'px'); }});
+
+        async function exportToPDF() {
+            const btn = document.querySelector('button[title="Export PDF"] i'); btn.className = "fas fa-spinner fa-spin";
+            const { jsPDF } = window.jspdf; 
+            // 16:9 Aspect Ratio for PDF
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1400, 788] }); 
+            const stage = document.getElementById('stage');
+            
+            const originalShadow = stage.style.boxShadow; stage.style.boxShadow = 'none'; stage.style.borderRadius = '0';
+            
+            try { 
+                const canvas = await html2canvas(stage, { scale: 1.5, useCORS: true, logging: false }); 
+                doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 1400, 788); 
+                doc.save('Vimid_DNA_Pro.pdf'); 
+                alert("Đã xuất PDF thành công!"); 
+            } 
+            catch (err) { console.error(err); alert("Lỗi xuất PDF. Thử lại sau."); } 
+            finally { stage.style.boxShadow = originalShadow; stage.style.borderRadius = ''; btn.className = "fas fa-file-pdf"; }
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('gapChart');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: vimidChartData,
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 10 } }, 
+                        plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Khoảng Cách Thực Thi (Thang điểm 10)' } }, 
+                        animation: { duration: 1500, easing: 'easeOutQuart' } 
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
